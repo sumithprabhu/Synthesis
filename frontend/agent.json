@@ -1,0 +1,21 @@
+{
+  "agentName": "ContentAgents Publisher Agent",
+  "version": "1.0.0",
+  "operatorWallet": "PUBLISHER_WALLET_ADDRESS",
+  "erc8004Identity": "CONTRACT_ADDRESS",
+  "supportedTools": [
+    "negotiate_access",
+    "check_reputation",
+    "evaluate_content",
+    "update_reputation"
+  ],
+  "techStack": ["OpenServ SDK", "x402", "Base Sepolia", "Next.js", "Prisma"],
+  "computeConstraints": {
+    "maxNegotiationRounds": 5,
+    "maxConcurrentSessions": 10,
+    "budgetPerSession": "$0.05"
+  },
+  "taskCategories": ["content_monetization", "agent_negotiation", "micropayments"],
+  "paymentProtocol": "x402",
+  "chain": "base-sepolia"
+}

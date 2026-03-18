@@ -1,0 +1,55 @@
+{
+  "name": "contentagents",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
+    "agent": "tsx agents/index.ts",
+    "demo": "tsx scripts/demoConsumer.ts",
+    "deploy:contract": "tsx scripts/deployContract.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.79.0",
+    "@coinbase/cdp-sdk": "^1.45.0",
+    "@coinbase/coinbase-sdk": "latest",
+    "@openserv-labs/sdk": "latest",
+    "@prisma/client": "^5.22.0",
+    "@x402/core": "latest",
+    "@x402/evm": "latest",
+    "@x402/fetch": "latest",
+    "bcryptjs": "^2.4.3",
+    "next": "14.2.0",
+    "next-auth": "^4.24.0",
+    "prisma": "^5.22.0",
+    "react": "18.3.0",
+    "react-dom": "18.3.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.9.3",
+    "uuid": "^9.0.0",
+    "viem": "^2.21.0",
+    "x402-express": "latest",
+    "zod": "^3.23.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/uuid": "^9.0.0",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.0",
+    "postcss": "^8.4.0",
+    "tsx": "^4.19.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(PRIVATE_KEY=6691c599507a96750ad7e061b0c6adbf066fe41971c7645034088baa6f9af9ea npm run deploy 2>&1)",
+      "Bash(curl:*)",
+      "Bash(node:*)",
+      "Bash(npx tsx:*)",
+      "Bash(npm show:*)",
+      "Bash(python3 -c \"import json,sys; v=json.load\\(sys.stdin\\); print\\(''''latest versions:'''', v[-5:]\\)\")",
+      "Bash(npx tsc:*)",
+      "Bash(DATABASE_URL=\"mongodb+srv://sumith:sumith@cluster0.qzdukwu.mongodb.net/contentagents?appName=Cluster0\" npx prisma generate 2>&1)",
+      "Bash(DATABASE_URL=\"mongodb+srv://sumith:sumith@cluster0.qzdukwu.mongodb.net/contentagents?appName=Cluster0\" npx prisma db push 2>&1)"
+    ]
+  }
+}

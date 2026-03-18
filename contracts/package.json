@@ -1,0 +1,15 @@
+{
+  "name": "contentagents-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.js --network base-sepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "dotenv": "^17.3.1",
+    "hardhat": "^2.22.0",
+    "typescript": "^5.4.0"
+  }
+}

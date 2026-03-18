@@ -1,0 +1,62 @@
+// ContentAgents - MongoDB
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Publisher {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  email               String    @unique
+  passwordHash        String?
+  name                String
+  cdpWalletId         String?
+  walletAddress       String    @unique
+  agentId             String?
+  erc8004Id           String?
+  generosity          Int       @default(5)
+  minPrice            Float     @default(0.001)
+  reputationThreshold Float     @default(3.0)
+  earnings            Float     @default(0)
+  articles            Article[]
+  createdAt           DateTime  @default(now())
+}
+
+model Article {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  content      String
+  summary      String
+  tier         String      @default("standard")
+  basePrice    Float       @default(0.002)
+  qualityScore Float       @default(5.0)
+  publisherId  String      @db.ObjectId
+  publisher    Publisher   @relation(fields: [publisherId], references: [id])
+  accessLogs   AccessLog[]
+  createdAt    DateTime    @default(now())
+}
+
+model AccessLog {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  articleId         String   @db.ObjectId
+  article           Article  @relation(fields: [articleId], references: [id])
+  consumerAgent     String
+  pricePaid         Float
+  negotiationRounds Int
+  txHash            String?
+  createdAt         DateTime @default(now())
+}
+
+model NegotiationSession {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  articleId       String
+  consumerAddress String
+  status          String
+  initialPrice    Float
+  finalPrice      Float?
+  rounds          Json     // array of { role, offer, reasoning }
+  createdAt       DateTime @default(now())
+}

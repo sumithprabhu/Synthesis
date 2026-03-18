@@ -1,0 +1,453 @@
+[
+  {
+    "timestamp": "2026-03-17T17:52:50.128Z",
+    "sessionId": "3898ceaa-ddaa-49a2-8ef3-daa5457e469d",
+    "event": "negotiation_started",
+    "data": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "decision": "Demo consumer started with CDP session wallet",
+    "toolsCalled": [],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:54:52.174Z",
+    "sessionId": "0a631bc4-ec01-4fdc-b0fc-16e0a43ce226",
+    "event": "negotiation_started",
+    "data": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "decision": "Demo consumer started with CDP session wallet",
+    "toolsCalled": [],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:56:24.918Z",
+    "sessionId": "68b57524-02ff-4034-8f74-a2e0b6284cf9",
+    "event": "negotiation_started",
+    "data": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "decision": "Demo consumer started with CDP session wallet",
+    "toolsCalled": [],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:56:47.968Z",
+    "sessionId": "009790fb-273c-4231-bde2-4694cbea7e4e",
+    "event": "negotiation_started",
+    "data": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "decision": "Demo consumer started with CDP session wallet",
+    "toolsCalled": [],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:56:48.868Z",
+    "sessionId": "009790fb-273c-4231-bde2-4694cbea7e4e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "decision": "counter",
+      "price": 0.00288
+    },
+    "decision": "Offer below minimum. Counter at $0.0029.",
+    "toolsCalled": [
+      "check_reputation"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:57:47.842Z",
+    "sessionId": "33065f8f-89e0-4516-ad50-9d8326464c0e",
+    "event": "negotiation_started",
+    "data": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "decision": "Demo consumer started with CDP session wallet",
+    "toolsCalled": [],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:57:48.552Z",
+    "sessionId": "33065f8f-89e0-4516-ad50-9d8326464c0e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "decision": "counter",
+      "price": 0.00288
+    },
+    "decision": "Offer below minimum. Counter at $0.0029.",
+    "toolsCalled": [
+      "check_reputation"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:57:48.796Z",
+    "sessionId": "33065f8f-89e0-4516-ad50-9d8326464c0e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "decision": "counter",
+      "price": 0.00288
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.20. Counter at $0.0029.",
+    "toolsCalled": [
+      "check_reputation"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:57:49.083Z",
+    "sessionId": "33065f8f-89e0-4516-ad50-9d8326464c0e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "decision": "counter",
+      "price": 0.00288
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.20. Counter at $0.0029.",
+    "toolsCalled": [
+      "check_reputation"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-17T17:57:49.351Z",
+    "sessionId": "33065f8f-89e0-4516-ad50-9d8326464c0e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "decision": "counter",
+      "price": 0.00288
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.20. Counter at $0.0029.",
+    "toolsCalled": [
+      "check_reputation"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:13:43.277Z",
+    "sessionId": "89291dc3-b209-4d50-8c96-216128c5042f",
+    "event": "negotiation_started",
+    "data": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "decision": "Demo consumer started",
+    "toolsCalled": [],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:13:48.049Z",
+    "sessionId": "89291dc3-b209-4d50-8c96-216128c5042f",
+    "event": "agent_registered",
+    "data": {
+      "txHash": "0x1f7b5da5d37cd6f1b75efd560ebaa46a561c23120d31fb39b03c1dd1b0072c18",
+      "address": "0x0Fe68c895aafF3FD16d236A20c1F9113F26e7486"
+    },
+    "decision": "Registered on ERC-8004 AgentRegistry",
+    "toolsCalled": [
+      "register_on_chain"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:13:51.109Z",
+    "sessionId": "89291dc3-b209-4d50-8c96-216128c5042f",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "round": 1,
+      "myOffer": 0.001,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Offer below minimum. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:13:51.410Z",
+    "sessionId": "89291dc3-b209-4d50-8c96-216128c5042f",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "round": 2,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:13:51.694Z",
+    "sessionId": "89291dc3-b209-4d50-8c96-216128c5042f",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "round": 3,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:13:52.004Z",
+    "sessionId": "89291dc3-b209-4d50-8c96-216128c5042f",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "round": 4,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:13:52.330Z",
+    "sessionId": "89291dc3-b209-4d50-8c96-216128c5042f",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "round": 5,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:13:52.748Z",
+    "sessionId": "89291dc3-b209-4d50-8c96-216128c5042f",
+    "event": "payment_required",
+    "data": {
+      "articleId": "cmmuwnyey00021c77m2c4t4hk",
+      "payTo": "0x742d35Cc6634C0532925a3b8D4C9E7f8D8b5A9c1",
+      "amount": "2400"
+    },
+    "decision": "x402 paywall hit — production would send USDC via CDP wallet",
+    "toolsCalled": [
+      "x402_pay"
+    ],
+    "retries": 0,
+    "success": false
+  },
+  {
+    "timestamp": "2026-03-18T05:53:29.490Z",
+    "sessionId": "62d93b3f-002a-4a6c-9568-25d603f80331",
+    "event": "negotiation_started",
+    "data": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "decision": "Demo consumer started",
+    "toolsCalled": [],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:30.385Z",
+    "sessionId": "62d93b3f-002a-4a6c-9568-25d603f80331",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "69ba3cb194e9f6a54f08f94f",
+      "round": 1,
+      "myOffer": 0.001,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Offer below minimum. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:30.751Z",
+    "sessionId": "62d93b3f-002a-4a6c-9568-25d603f80331",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "69ba3cb194e9f6a54f08f94f",
+      "round": 2,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:48.091Z",
+    "sessionId": "9be9a207-c41a-4a54-b59d-cd12c8b1137e",
+    "event": "negotiation_started",
+    "data": {
+      "baseUrl": "http://localhost:3000"
+    },
+    "decision": "Demo consumer started",
+    "toolsCalled": [],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:48.806Z",
+    "sessionId": "9be9a207-c41a-4a54-b59d-cd12c8b1137e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "69ba3cb194e9f6a54f08f94f",
+      "round": 1,
+      "myOffer": 0.001,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Offer below minimum. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:49.161Z",
+    "sessionId": "9be9a207-c41a-4a54-b59d-cd12c8b1137e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "69ba3cb194e9f6a54f08f94f",
+      "round": 2,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:49.651Z",
+    "sessionId": "9be9a207-c41a-4a54-b59d-cd12c8b1137e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "69ba3cb194e9f6a54f08f94f",
+      "round": 3,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:50.022Z",
+    "sessionId": "9be9a207-c41a-4a54-b59d-cd12c8b1137e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "69ba3cb194e9f6a54f08f94f",
+      "round": 4,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:50.371Z",
+    "sessionId": "9be9a207-c41a-4a54-b59d-cd12c8b1137e",
+    "event": "counter_offered",
+    "data": {
+      "articleId": "69ba3cb194e9f6a54f08f94f",
+      "round": 5,
+      "myOffer": 0.00204,
+      "decision": "counter",
+      "counterOffer": 0.0024000000000000002
+    },
+    "decision": "Fair price based on quality 8/10, reputation multiplier 1.00. Counter at $0.0024.",
+    "toolsCalled": [
+      "check_reputation",
+      "negotiate_price"
+    ],
+    "retries": 0,
+    "success": true
+  },
+  {
+    "timestamp": "2026-03-18T05:53:50.405Z",
+    "sessionId": "9be9a207-c41a-4a54-b59d-cd12c8b1137e",
+    "event": "payment_required",
+    "data": {
+      "articleId": "69ba3cb194e9f6a54f08f94f",
+      "payTo": "0x742d35Cc6634C0532925a3b8D4C9E7f8D8b5A9c1",
+      "amount": "2400"
+    },
+    "decision": "x402 paywall hit — production would send USDC via CDP wallet",
+    "toolsCalled": [
+      "x402_pay"
+    ],
+    "retries": 0,
+    "success": false
+  }
+]
