@@ -6,6 +6,7 @@ export const negotiateAccessSchema = z.object({
   consumerAddress: z.string(),
   offer: z.number(),
   sessionId: z.string().optional(),
+  useCase: z.string().optional(),
 });
 
 export type NegotiateAccessInput = z.infer<typeof negotiateAccessSchema>;
@@ -25,5 +26,6 @@ export async function negotiateAccess(
     consumerAddress: input.consumerAddress,
     offer: input.offer,
     sessionId: input.sessionId,
+    useCase: input.useCase,
   });
 }

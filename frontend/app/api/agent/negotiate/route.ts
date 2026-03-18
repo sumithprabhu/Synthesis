@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { articleId, consumerAddress, offer, sessionId } = body;
+    const { articleId, consumerAddress, offer, sessionId, useCase } = body;
     if (!articleId || !consumerAddress || typeof offer !== 'number') {
       return NextResponse.json(
         { error: 'articleId, consumerAddress, and offer required' },
@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
       consumerAddress,
       offer,
       sessionId,
+      useCase: typeof useCase === 'string' ? useCase : undefined,
     });
 
     return NextResponse.json({

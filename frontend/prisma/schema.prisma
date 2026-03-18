@@ -9,34 +9,41 @@ datasource db {
 }
 
 model Publisher {
-  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
-  email               String    @unique
-  passwordHash        String?
-  name                String
-  cdpWalletId         String?
-  walletAddress       String    @unique
-  agentId             String?
-  erc8004Id           String?
-  generosity          Int       @default(5)
-  minPrice            Float     @default(0.001)
-  reputationThreshold Float     @default(3.0)
-  earnings            Float     @default(0)
-  articles            Article[]
-  createdAt           DateTime  @default(now())
+  id                     String    @id @default(auto()) @map("_id") @db.ObjectId
+  email                  String    @unique
+  passwordHash           String?
+  name                   String
+  cdpWalletId            String?
+  walletAddress          String    @unique
+  agentId                String?
+  erc8004Id              String?
+  generosity             Int       @default(5)
+  minPrice               Float     @default(0.001)
+  reputationThreshold    Float     @default(3.0)
+  earnings               Float     @default(0)
+  agentCreated           Boolean   @default(false)
+  openservAgentId        String?
+  freeForHighReputation  Boolean   @default(false)
+  allowFreeByUseCase     Boolean   @default(true)
+  freeCaseKeywords       String    @default("research,education,nonprofit,open-source")
+  articles               Article[]
+  createdAt              DateTime  @default(now())
 }
 
 model Article {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
-  content      String
-  summary      String
-  tier         String      @default("standard")
-  basePrice    Float       @default(0.002)
-  qualityScore Float       @default(5.0)
-  publisherId  String      @db.ObjectId
-  publisher    Publisher   @relation(fields: [publisherId], references: [id])
-  accessLogs   AccessLog[]
-  createdAt    DateTime    @default(now())
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  content       String
+  summary       String
+  tier          String      @default("standard")
+  basePrice     Float       @default(0.002)
+  qualityScore  Float       @default(5.0)
+  previewLength Int         @default(300)
+  isFree        Boolean     @default(false)
+  publisherId   String      @db.ObjectId
+  publisher     Publisher   @relation(fields: [publisherId], references: [id])
+  accessLogs    AccessLog[]
+  createdAt     DateTime    @default(now())
 }
 
 model AccessLog {

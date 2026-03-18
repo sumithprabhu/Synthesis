@@ -14,6 +14,11 @@ type Publisher = {
   earnings: number;
   articles: { id: string }[];
   erc8004Id?: string | null;
+  agentCreated: boolean;
+  openservAgentId?: string | null;
+  freeForHighReputation: boolean;
+  allowFreeByUseCase: boolean;
+  freeCaseKeywords: string;
 };
 
 type Negotiation = {
@@ -55,11 +60,35 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [reputation, setReputation] = useState<{ score: number; totalDeals: number } | null>(null);
 
+  // Agent creation state
+  const [agentCreating, setAgentCreating] = useState(false);
+  const [agentCreateError, setAgentCreateError] = useState<string | null>(null);
+
+  // Settings form state
+  const [settingsGenerosity, setSettingsGenerosity] = useState(5);
+  const [settingsMinPrice, setSettingsMinPrice] = useState(0.001);
+  const [settingsRepThreshold, setSettingsRepThreshold] = useState(3.0);
+  const [settingsFreeForHighRep, setSettingsFreeForHighRep] = useState(false);
+  const [settingsAllowFreeByUseCase, setSettingsAllowFreeByUseCase] = useState(true);
+  const [settingsFreeCaseKeywords, setSettingsFreeCaseKeywords] = useState('research,education,nonprofit,open-source');
+  const [settingsSaving, setSettingsSaving] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
+  const [settingsError, setSettingsError] = useState<string | null>(null);
+
   useEffect(() => {
     fetch('/api/dashboard')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data?.publisher) setPublisher(data.publisher);
+        if (data?.publisher) {
+          const p: Publisher = data.publisher;
+          setPublisher(p);
+          setSettingsGenerosity(p.generosity);
+          setSettingsMinPrice(p.minPrice);
+          setSettingsRepThreshold(p.reputationThreshold);
+          setSettingsFreeForHighRep(p.freeForHighReputation ?? false);
+          setSettingsAllowFreeByUseCase(p.allowFreeByUseCase ?? true);
+          setSettingsFreeCaseKeywords(p.freeCaseKeywords ?? 'research,education,nonprofit,open-source');
+        }
         if (data?.negotiations) setNegotiations(data.negotiations);
         if (data?.accessLogs) setAccessLogs(data.accessLogs);
         if (data?.reputation) setReputation(data.reputation);
@@ -68,6 +97,59 @@ export default function DashboardPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  async function handleCreateAgent() {
+    setAgentCreating(true);
+    setAgentCreateError(null);
+    try {
+      const res = await fetch('/api/publisher/agent/create', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setAgentCreateError(data.error || 'Failed to create agent');
+        return;
+      }
+      setPublisher((prev) =>
+        prev ? { ...prev, agentCreated: true, openservAgentId: data.openservAgentId } : prev
+      );
+    } catch (e) {
+      setAgentCreateError(e instanceof Error ? e.message : 'Request failed');
+    } finally {
+      setAgentCreating(false);
+    }
+  }
+
+  async function handleSaveSettings(e: React.FormEvent) {
+    e.preventDefault();
+    setSettingsSaving(true);
+    setSettingsSaved(false);
+    setSettingsError(null);
+    try {
+      const res = await fetch('/api/publisher/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          generosity: settingsGenerosity,
+          minPrice: settingsMinPrice,
+          reputationThreshold: settingsRepThreshold,
+          freeForHighReputation: settingsFreeForHighRep,
+          allowFreeByUseCase: settingsAllowFreeByUseCase,
+          freeCaseKeywords: settingsFreeCaseKeywords,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setSettingsError(data.error || 'Failed to save settings');
+        return;
+      }
+      setPublisher((prev) => (prev ? { ...prev, ...data } : prev));
+      setSettingsSaved(true);
+      setTimeout(() => setSettingsSaved(false), 3000);
+    } catch (e) {
+      setSettingsError(e instanceof Error ? e.message : 'Request failed');
+    } finally {
+      setSettingsSaving(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -88,6 +170,11 @@ export default function DashboardPage() {
     earnings: 0,
     articles: [],
     erc8004Id: null,
+    agentCreated: false,
+    openservAgentId: null,
+    freeForHighReputation: false,
+    allowFreeByUseCase: true,
+    freeCaseKeywords: 'research,education,nonprofit,open-source',
   };
 
   const rep = reputation || { score: 50, totalDeals: 0 };
@@ -113,6 +200,44 @@ export default function DashboardPage() {
 
       <div className="mx-auto max-w-6xl px-6 py-10">
         <h1 className="text-2xl font-bold text-white">Publisher Dashboard</h1>
+
+        {/* Agent Creation Card */}
+        <section className="mt-8">
+          <div className={`rounded-xl border p-6 ${pub.agentCreated ? 'border-emerald-700 bg-emerald-900/20' : 'border-amber-700 bg-amber-900/20'}`}>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-white">
+                  OpenServ Agent
+                  {pub.agentCreated && (
+                    <span className="ml-2 rounded-full bg-emerald-800 px-2 py-0.5 text-xs text-emerald-300">Active</span>
+                  )}
+                </h2>
+                {pub.agentCreated ? (
+                  <p className="mt-1 text-sm text-slate-400">
+                    Agent registered.{' '}
+                    <span className="font-mono text-emerald-400">{pub.openservAgentId}</span>
+                  </p>
+                ) : (
+                  <p className="mt-1 text-sm text-amber-300">
+                    You must create your OpenServ agent before you can publish content.
+                  </p>
+                )}
+                {agentCreateError && (
+                  <p className="mt-2 text-sm text-red-400">{agentCreateError}</p>
+                )}
+              </div>
+              {!pub.agentCreated && (
+                <button
+                  onClick={handleCreateAgent}
+                  disabled={agentCreating}
+                  className="shrink-0 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+                >
+                  {agentCreating ? 'Creating…' : 'Create your agent'}
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
 
         {/* Stats Grid */}
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -168,6 +293,123 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Agent Settings Panel */}
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold text-white mb-4">Agent Settings</h2>
+          <form onSubmit={handleSaveSettings} className="rounded-xl border border-slate-700 bg-slate-800/50 p-6 space-y-5">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Generosity */}
+              <div>
+                <label className="block text-sm font-medium text-slate-300">
+                  Generosity (1–10)
+                </label>
+                <p className="text-xs text-slate-500 mb-1">How willing to discount</p>
+                <input
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={settingsGenerosity}
+                  onChange={(e) => setSettingsGenerosity(Number(e.target.value))}
+                  className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* Min price */}
+              <div>
+                <label className="block text-sm font-medium text-slate-300">
+                  Min price (USD)
+                </label>
+                <p className="text-xs text-slate-500 mb-1">Floor price for any deal</p>
+                <input
+                  type="number"
+                  min={0}
+                  step={0.0001}
+                  value={settingsMinPrice}
+                  onChange={(e) => setSettingsMinPrice(Number(e.target.value))}
+                  className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* Reputation threshold */}
+              <div>
+                <label className="block text-sm font-medium text-slate-300">
+                  Reputation threshold
+                </label>
+                <p className="text-xs text-slate-500 mb-1">Min ERC-8004 score to waive fees</p>
+                <input
+                  type="number"
+                  min={0}
+                  step={0.1}
+                  value={settingsRepThreshold}
+                  onChange={(e) => setSettingsRepThreshold(Number(e.target.value))}
+                  className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
+            {/* Toggles */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settingsFreeForHighRep}
+                  onChange={(e) => setSettingsFreeForHighRep(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-emerald-500"
+                />
+                <div>
+                  <span className="text-sm font-medium text-slate-300">Free for high reputation</span>
+                  <p className="text-xs text-slate-500">Auto-grant free access to agents with score &gt; 70</p>
+                </div>
+              </label>
+
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settingsAllowFreeByUseCase}
+                  onChange={(e) => setSettingsAllowFreeByUseCase(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-slate-900 text-emerald-500 focus:ring-emerald-500"
+                />
+                <div>
+                  <span className="text-sm font-medium text-slate-300">Allow free by use case</span>
+                  <p className="text-xs text-slate-500">Grant free access if stated use case matches keywords</p>
+                </div>
+              </label>
+            </div>
+
+            {/* Free case keywords */}
+            <div>
+              <label className="block text-sm font-medium text-slate-300">
+                Free-case keywords
+              </label>
+              <p className="text-xs text-slate-500 mb-1">Comma-separated keywords that qualify for free access</p>
+              <input
+                type="text"
+                value={settingsFreeCaseKeywords}
+                onChange={(e) => setSettingsFreeCaseKeywords(e.target.value)}
+                placeholder="research,education,nonprofit,open-source"
+                className="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              />
+            </div>
+
+            {settingsError && (
+              <div className="rounded-lg bg-red-900/30 px-4 py-2 text-sm text-red-300">{settingsError}</div>
+            )}
+            {settingsSaved && (
+              <div className="rounded-lg bg-emerald-900/30 px-4 py-2 text-sm text-emerald-300">Settings saved.</div>
+            )}
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={settingsSaving}
+                className="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+              >
+                {settingsSaving ? 'Saving…' : 'Save settings'}
+              </button>
+            </div>
+          </form>
+        </section>
 
         {/* ERC-8004 Identity */}
         <section className="mt-8">

@@ -39,6 +39,18 @@ export async function GET(
     return NextResponse.json({ error: 'Article not found' }, { status: 404 });
   }
 
+  // Free articles bypass the x402 payment gate entirely
+  if (article.isFree) {
+    return NextResponse.json({
+      id: article.id,
+      title: article.title,
+      content: article.content,
+      summary: article.summary,
+      tier: article.tier,
+      isFree: true,
+    });
+  }
+
   const payTo = article.publisher.walletAddress;
   const agreedPriceHeader = request.headers.get('x-agreed-price');
   const priceUsd = agreedPriceHeader ? parseFloat(agreedPriceHeader) : article.basePrice;

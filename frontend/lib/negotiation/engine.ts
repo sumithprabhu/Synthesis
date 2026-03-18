@@ -14,6 +14,7 @@ export type NegotiateInput = {
   consumerAddress: string;
   offer: number;
   sessionId?: string;
+  useCase?: string;
 };
 
 export type NegotiateResult = {
@@ -34,7 +35,7 @@ function reputationMultiplier(score: number | null, exists: boolean): number {
 }
 
 export async function negotiate(input: NegotiateInput): Promise<NegotiateResult> {
-  const { articleId, consumerAddress, offer, sessionId: existingSessionId } = input;
+  const { articleId, consumerAddress, offer, sessionId: existingSessionId, useCase } = input;
 
   const article = await prisma.article.findUnique({
     where: { id: articleId },
@@ -43,6 +44,65 @@ export async function negotiate(input: NegotiateInput): Promise<NegotiateResult>
   if (!article) throw new Error('Article not found');
 
   const { score, exists } = await getReputation(consumerAddress);
+
+  // Free access: high-reputation consumer
+  if (article.publisher.freeForHighReputation && exists && score !== null && score > 70) {
+    const sessionId = (
+      await prisma.negotiationSession.create({
+        data: {
+          articleId,
+          consumerAddress,
+          status: 'accepted',
+          initialPrice: 0,
+          finalPrice: 0,
+          rounds: [
+            { role: 'publisher', offer: 0, reasoning: 'Free access granted based on high reputation score.' },
+          ] as object[],
+        },
+      })
+    ).id;
+    return {
+      decision: 'accept',
+      price: 0,
+      reasoning: 'Free access granted based on high reputation score.',
+      sessionId,
+      rounds: [{ role: 'publisher', offer: 0, reasoning: 'Free access granted based on high reputation score.' }],
+      agreed: true,
+    };
+  }
+
+  // Free access: qualifying use case
+  if (article.publisher.allowFreeByUseCase && useCase) {
+    const keywords = article.publisher.freeCaseKeywords
+      .split(',')
+      .map((k) => k.trim().toLowerCase())
+      .filter(Boolean);
+    const useCaseLower = useCase.toLowerCase();
+    const matched = keywords.some((kw) => useCaseLower.includes(kw));
+    if (matched) {
+      const reasoning = `Free access granted based on your stated use case: ${useCase}`;
+      const sessionId = (
+        await prisma.negotiationSession.create({
+          data: {
+            articleId,
+            consumerAddress,
+            status: 'accepted',
+            initialPrice: 0,
+            finalPrice: 0,
+            rounds: [{ role: 'publisher', offer: 0, reasoning }] as object[],
+          },
+        })
+      ).id;
+      return {
+        decision: 'accept',
+        price: 0,
+        reasoning,
+        sessionId,
+        rounds: [{ role: 'publisher', offer: 0, reasoning }],
+        agreed: true,
+      };
+    }
+  }
   const repMult = reputationMultiplier(score, exists);
   const fairPrice =
     article.basePrice *
