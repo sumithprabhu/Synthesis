@@ -4,195 +4,274 @@ ContentAgents is an AI-native content marketplace where **publisher agents** and
 
 ---
 
-## High-Level Architecture
+## 1. Full System Architecture
 
 ```mermaid
 graph TB
-    subgraph Consumer["🤖 Consumer Agent (demoConsumer.ts)"]
-        CA[CDP Wallet\nBase Sepolia]
+    subgraph PUB["👤 Publisher (Human)"]
+        PUI[Register at /api/publisher/register]
+        PPAGE[Upload content at /publish]
     end
 
-    subgraph Frontend["🖥️ Next.js API (frontend/)"]
-        API_CONTENT[GET /api/content]
-        API_NEGOTIATE[POST /api/agent/negotiate]
-        API_CONTENT_ID[GET /api/content/:id\nx402 gate]
-        API_REGISTER[POST /api/agent/register]
-        API_PUB_REG[POST /api/publisher/register]
-        API_DASH[GET /api/dashboard]
-        NEG_ENGINE[NegotiationEngine\nlib/negotiation/engine.ts]
+    subgraph PAGENT["🤖 Publisher Agent (OpenServ)"]
+        PA[publisherAgent.ts]
+        CAP_NEG[negotiate_access]
+        CAP_REP[check_reputation]
+        CAP_EVAL[evaluate_content]
+        CAP_UPD[update_reputation]
+        PA --> CAP_NEG & CAP_REP & CAP_EVAL & CAP_UPD
     end
 
-    subgraph DB["🗄️ SQLite Database"]
-        T_PUB[(Publisher)]
-        T_ART[(Article)]
-        T_NEG[(NegotiationSession)]
-        T_LOG[(AccessLog)]
+    subgraph CAGENT["🤖 Consumer Agent (demoConsumer.ts)"]
+        CA_WALLET[Viem wallet\nDEMO_PRIVATE_KEY]
+        CA_LOGIC[Negotiation loop\n+ x402 payment]
     end
 
-    subgraph Chain["⛓️ Base Sepolia"]
-        CONTRACT[AgentRegistry.sol\nERC-8004 Identity + Reputation]
+    subgraph API["🖥️ Next.js API Routes"]
+        R1[POST /api/publisher/register]
+        R2[POST /api/content]
+        R3[GET /api/content]
+        R4[GET /api/content/:id\n🔒 x402 gate]
+        R5[POST /api/agent/negotiate]
+        R6[POST /api/agent/register]
+        R7[GET /api/dashboard]
+    end
+
+    subgraph DB["🍃 MongoDB Atlas"]
+        M_PUB[(Publisher)]
+        M_ART[(Article)]
+        M_NEG[(NegotiationSession)]
+        M_LOG[(AccessLog)]
+    end
+
+    subgraph CHAIN["⛓️ Base Sepolia"]
+        CONTRACT[AgentRegistry.sol\nERC-8004]
         USDC[USDC Token]
     end
 
-    subgraph External["🌐 External Services"]
-        CDP[Coinbase Developer\nPlatform CDP]
+    subgraph EXT["🌐 External"]
+        CDP[Coinbase CDP\nManaged Wallets]
         X402[x402 Facilitator\nx402.org/facilitator]
-        OPENSERV[OpenServ\nAgent Orchestration]
+        OPENSERV[OpenServ Platform]
     end
 
-    CA -->|1 fetch articles| API_CONTENT
-    API_CONTENT -->|query| T_ART
-    CA -->|2 negotiate| API_NEGOTIATE
-    API_NEGOTIATE --> NEG_ENGINE
-    NEG_ENGINE -->|read reputation| CONTRACT
-    NEG_ENGINE -->|save rounds| T_NEG
-    CA -->|3 pay USDC| USDC
-    CA -->|4 present payment-signature| API_CONTENT_ID
-    API_CONTENT_ID -->|verify payment| X402
-    API_CONTENT_ID -->|write| T_LOG
-    CA -->|register identity| API_REGISTER
-    API_REGISTER -->|on-chain tx| CONTRACT
-    API_PUB_REG -->|create wallet| CDP
-    API_PUB_REG -->|save| T_PUB
-    API_DASH -->|read all| DB
-    OPENSERV -->|webhook| Frontend
+    PUI --> R1 --> CDP --> M_PUB
+    PPAGE --> R2 --> M_ART
+    OPENSERV -->|webhook| API
+    PAGENT --> API
+
+    CA_WALLET -->|register| R6 --> CONTRACT
+    CA_LOGIC -->|fetch| R3 --> M_ART
+    CA_LOGIC -->|negotiate| R5 --> M_NEG
+    R5 -->|reputation lookup| CONTRACT
+    CA_LOGIC -->|pay + request| R4
+    R4 -->|verify payment| X402
+    R4 -->|serve content| CA_LOGIC
+    R4 --> M_LOG
+    R7 --> M_PUB & M_ART & M_NEG & M_LOG
 ```
 
 ---
 
-## End-to-End Request Flow
+## 2. Publisher Journey (from zero to earning)
+
+```mermaid
+sequenceDiagram
+    actor P as Publisher (Human)
+    participant UI as Next.js UI
+    participant API as API Routes
+    participant CDP as Coinbase CDP
+    participant DB as MongoDB
+    participant Chain as Base Sepolia
+
+    Note over P,Chain: ── STEP 1: Registration ──
+
+    P->>UI: Visit /api/publisher/register
+    UI->>API: POST {name, email, password}
+    API->>CDP: Wallet.create(base-sepolia)
+    CDP-->>API: {walletId, address}
+    API->>DB: Publisher.create({email, walletAddress, cdpWalletId})
+    DB-->>API: publisher record
+    API-->>P: {id, walletAddress, message}
+
+    Note over P,Chain: ── STEP 2: Publish Content ──
+
+    P->>UI: Visit /publish → fill title + content
+    UI->>API: GET /api/dashboard (get publisherId)
+    API->>DB: Publisher.findFirst()
+    DB-->>UI: {publisher.id}
+    UI->>API: POST /api/content {title, content, tier, publisherId}
+    API->>DB: Article.create({title, content, summary, basePrice})
+    DB-->>UI: {id, qualityScore}
+    UI-->>P: ✅ Article published
+
+    Note over P,Chain: ── STEP 3: Agent Registration (optional) ──
+
+    P->>API: POST /api/agent/register {walletId, agentName}
+    API->>CDP: loadWallet(walletId)
+    CDP-->>API: wallet
+    API->>Chain: AgentRegistry.register(agentName)
+    Chain-->>API: txHash
+    API-->>P: {success, txHash}
+
+    Note over P,Chain: ── STEP 4: Earn from deals ──
+
+    Note over DB,Chain: Consumer pays → AccessLog written\nReputation updated on-chain
+    P->>UI: Visit /dashboard
+    UI->>API: GET /api/dashboard
+    API->>DB: Publisher + Articles + AccessLogs + NegotiationSessions
+    API-->>UI: {earnings, negotiations, apiCalls, stats}
+    UI-->>P: 📊 Metrics dashboard
+```
+
+---
+
+## 3. Consumer Journey (negotiate → pay → read)
 
 ```mermaid
 sequenceDiagram
     actor C as Consumer Agent
+    participant Wallet as Viem Wallet\n(DEMO_PRIVATE_KEY)
     participant API as Next.js API
-    participant DB as SQLite DB
+    participant DB as MongoDB
     participant Chain as Base Sepolia
     participant X402 as x402 Facilitator
 
+    Note over C,X402: ── STEP 1: Identity ──
+
+    C->>Wallet: privateKeyToAccount(DEMO_PRIVATE_KEY)
+    Wallet-->>C: address = 0x0Fe6...
+
+    C->>Chain: AgentRegistry.getReputation(address)
+    Chain-->>C: {exists: false} → not yet registered
+
+    C->>Chain: AgentRegistry.register("DemoConsumerAgent")
+    Chain-->>C: txHash confirmed ✅
+    Note right of Chain: Reputation score starts at 0\nMultiplier = 1.2x (unknown)
+
+    Note over C,X402: ── STEP 2: Discovery ──
+
     C->>API: GET /api/content
-    API->>DB: article.findMany()
-    DB-->>API: [{id, title, basePrice, ...}]
+    API->>DB: Article.findMany()
+    DB-->>API: [{id, title, basePrice, tier, ...}]
     API-->>C: article list
 
-    loop Negotiation (up to 5 rounds)
+    Note over C,X402: ── STEP 3: Negotiation loop ──
+
+    loop Up to 5 rounds
         C->>API: POST /api/agent/negotiate\n{articleId, consumerAddress, offer}
         API->>Chain: getReputation(consumerAddress)
-        Chain-->>API: {score, totalDeals}
-        API->>API: calc fairPrice\n= basePrice × quality × repMultiplier
-        API->>DB: upsert NegotiationSession
-        API-->>C: {decision, counterOffer, reasoning}
+        Chain-->>API: {score, totalDeals, exists}
+        API->>API: fairPrice = basePrice × quality/5\n         × (1 - generosity/20)\n         × repMultiplier
+        API->>DB: upsert NegotiationSession (rounds as JSON)
+        DB-->>API: sessionId
+        API-->>C: {decision, counterOffer, reasoning, rounds}
+
+        alt decision = accept
+            Note over C: 🎉 Deal agreed at fairPrice
+        else decision = counter
+            Note over C: Raise offer by 85%, retry
+        else decision = reject (max rounds)
+            Note over C: ❌ Walk away
+        end
     end
 
-    C->>API: GET /api/content/:id
-    API-->>C: 402 Payment Required\n{accepts:[{payTo, amount, asset}]}
+    Note over C,X402: ── STEP 4: Payment & Access ──
 
-    C->>Chain: transfer USDC → publisher wallet
+    C->>API: GET /api/content/:id (no payment header)
+    API-->>C: 402 Payment Required\n{accepts:[{payTo, maxAmount, asset: USDC}]}
+
+    C->>Chain: Transfer USDC → publisher.walletAddress
+    Chain-->>C: payment receipt / signature
 
     C->>API: GET /api/content/:id\n+ payment-signature header
-    API->>X402: POST /verify\n{paymentPayload, requirements}
+    API->>X402: POST /verify {paymentPayload, requirements}
     X402-->>API: {verified: true}
-    API->>DB: AccessLog.create()
-    API-->>C: {title, content} ✓
+    API->>DB: AccessLog.create({pricePaid, consumerAgent, txHash})
+    API-->>C: {title, content} ✅
+
+    Note over C,X402: ── STEP 5: Reputation update ──
+
+    API->>Chain: AgentRegistry.updateReputation(consumerAddr, success=true)
+    Chain-->>API: txHash
+    Note right of Chain: Consumer score increases\nBetter deals next time!
 ```
 
 ---
 
-## Negotiation Algorithm
+## 4. Negotiation Algorithm
 
 ```mermaid
 flowchart TD
-    START([Consumer sends offer]) --> LOOKUP[Lookup ERC-8004\nreputation score]
-    LOOKUP --> CALC["Calc fairPrice\n= basePrice × quality/5\n× 1-generosity/20\n× repMultiplier"]
+    START([Consumer sends offer]) --> GETART[Load Article\nbasePrice, qualityScore, generosity]
+    GETART --> GETREP[Read ERC-8004\nreputation from chain]
 
-    CALC --> REP{Rep score?}
-    REP -->|"> 70 trusted"| M1["× 0.8 discount"]
-    REP -->|"40–70 neutral"| M2["× 1.0"]
-    REP -->|"< 40 risky"| M3["× 1.5 premium"]
-    REP -->|"not registered"| M4["× 1.2 unknown"]
+    GETREP --> MULT{Reputation score?}
+    MULT -->|score > 70\ntrusted| R1["repMult = 0.8x\n(loyalty discount)"]
+    MULT -->|score 40–70\nneutral| R2["repMult = 1.0x"]
+    MULT -->|score < 40\nrisky| R3["repMult = 1.5x\n(risk premium)"]
+    MULT -->|not registered| R4["repMult = 1.2x\n(unknown premium)"]
 
-    M1 & M2 & M3 & M4 --> CHECK{offer vs fairPrice}
+    R1 & R2 & R3 & R4 --> CALC["fairPrice = basePrice\n× (qualityScore / 5)\n× (1 − generosity / 20)\n× repMult"]
 
-    CHECK -->|"offer ≥ fairPrice"| ACCEPT([✅ Accept\nreturn agreed price])
-    CHECK -->|"offer ≥ fairPrice × 0.6"| COUNTER([🔄 Counter\nat fairPrice])
-    CHECK -->|"offer < fairPrice × 0.6"| ROUNDS{rounds < 5?}
+    CALC --> CMP{Compare offer}
 
-    ROUNDS -->|yes| COUNTER2([🔄 Counter\nat fairPrice])
-    ROUNDS -->|no| REJECT([❌ Reject\nmax rounds reached])
+    CMP -->|offer ≥ fairPrice| ACC(["✅ ACCEPT\nreturn offer as final price"])
+    CMP -->|fairPrice×0.6 ≤ offer < fairPrice| CNT1(["🔄 COUNTER\nat fairPrice"])
+    CMP -->|offer < fairPrice×0.6| RNDS{rounds < 5?}
+
+    RNDS -->|yes| CNT2(["🔄 COUNTER\nat fairPrice"])
+    RNDS -->|no| REJ(["❌ REJECT\nmax rounds reached"])
+
+    ACC --> SAVE[Save session\nstatus = accepted]
+    CNT1 & CNT2 --> SAVE2[Append round to\nNegotiationSession]
+    REJ --> SAVE3[Save session\nstatus = rejected]
 ```
 
 ---
 
-## Component Map
+## 5. Publisher Agent Capabilities (OpenServ)
 
 ```mermaid
 graph LR
-    subgraph Contracts["contracts/"]
-        SOL[AgentRegistry.sol\nERC-8004 registry]
-        DEPLOY_JS[scripts/deploy.js]
-        HC[hardhat.config.ts]
+    subgraph Agent["🤖 Publisher Agent (OpenServ SDK)"]
+        PROMPT["System prompt:\nNegotiate fair compensation.\nProtect publisher interests.\nBuild long-term relationships."]
     end
 
-    subgraph FE["frontend/"]
-        subgraph Pages["app/ (Next.js pages)"]
-            PG_HOME[page.tsx\nlanding]
-            PG_DASH[dashboard/page.tsx\nmetrics]
-            PG_PUB[publish/page.tsx\nupload UI]
-        end
-
-        subgraph Routes["app/api/ (route handlers)"]
-            R_CONTENT[content/\nGET list + GET :id x402]
-            R_NEG[agent/negotiate/]
-            R_REG[agent/register/]
-            R_PUBREG[publisher/register/]
-            R_DASH[dashboard/]
-            R_WH[webhook/openserv/]
-        end
-
-        subgraph Lib["lib/ (core logic)"]
-            L_CDP[cdp/\nwallet helpers]
-            L_ERC[erc8004/registry.ts\nviem on-chain calls]
-            L_ENG[negotiation/engine.ts\nprice logic]
-            L_PRI[prisma.ts\nDB client]
-        end
-
-        subgraph Agents["agents/"]
-            A_PUB[publisherAgent.ts]
-            A_NEG[capabilities/negotiatePrice.ts]
-            A_REP[capabilities/checkReputation.ts]
-            A_EVAL[capabilities/evaluateContent.ts]
-            A_UPD[capabilities/updateReputation.ts]
-        end
-
-        subgraph Scripts["scripts/"]
-            S_DEMO[demoConsumer.ts\ne2e demo]
-            S_DEP[deployContract.ts\nCDP deploy]
-        end
-
-        subgraph Prisma["prisma/"]
-            PR_SCH[schema.prisma]
-            PR_SEED[seed.ts]
-        end
+    subgraph Caps["Capabilities"]
+        NEG["negotiate_access\narticleId + consumerAddress + offer\n→ decision + counterOffer"]
+        REP["check_reputation\nwalletAddress\n→ score + totalDeals + exists"]
+        EVAL["evaluate_content\narticleId\n→ qualityScore 1–10 via LLM"]
+        UPD["update_reputation\npublisherId + agentAddress + dealSuccess\n→ on-chain tx"]
     end
 
-    Routes --> Lib
-    Agents --> Lib
-    Scripts --> Lib
-    Lib --> L_ERC
-    L_ERC --> SOL
+    subgraph Calls["Underlying calls"]
+        E1[negotiation/engine.ts]
+        E2[erc8004/registry.ts\nreadContract via viem]
+        E3[OpenAI API\ncontent scoring]
+        E4[erc8004/registry.ts\nwriteContract via CDP wallet]
+    end
+
+    Agent --> Caps
+    NEG --> E1
+    REP --> E2
+    EVAL --> E3
+    UPD --> E4
+
+    OPENSERV[OpenServ Platform] -->|webhook / task| Agent
 ```
 
 ---
 
-## Data Model
+## 6. Data Model
 
 ```mermaid
 erDiagram
     Publisher {
-        string id PK
-        string email
+        ObjectId id PK
+        string email UK
         string name
-        string walletAddress
+        string walletAddress UK
         string cdpWalletId
         string agentId
         string erc8004Id
@@ -200,33 +279,35 @@ erDiagram
         float minPrice
         float reputationThreshold
         float earnings
+        datetime createdAt
     }
 
     Article {
-        string id PK
+        ObjectId id PK
         string title
         string content
         string summary
         string tier
         float basePrice
         float qualityScore
-        string publisherId FK
+        ObjectId publisherId FK
+        datetime createdAt
     }
 
     NegotiationSession {
-        string id PK
-        string articleId FK
+        ObjectId id PK
+        string articleId
         string consumerAddress
         string status
         float initialPrice
         float finalPrice
-        string rounds
+        Json rounds
         datetime createdAt
     }
 
     AccessLog {
-        string id PK
-        string articleId FK
+        ObjectId id PK
+        ObjectId articleId FK
         string consumerAgent
         float pricePaid
         int negotiationRounds
@@ -235,45 +316,113 @@ erDiagram
     }
 
     Publisher ||--o{ Article : publishes
-    Article ||--o{ AccessLog : "accessed via"
+    Article ||--o{ AccessLog : "paid access"
     Article ||--o{ NegotiationSession : "negotiated for"
 ```
 
 ---
 
-## Key Environment Variables
+## 7. Component Map
 
-| Variable | Purpose |
-|---|---|
-| `CDP_API_KEY_NAME` | Coinbase Developer Platform API key ID |
-| `CDP_API_KEY_PRIVATE_KEY` | CDP API secret for managed wallet signing |
-| `OPENAI_API_KEY` | OpenAI for content quality scoring |
-| `OPENSERV_API_KEY` | OpenServ agent orchestration |
-| `AGENT_REGISTRY_CONTRACT` | Deployed ERC-8004 contract on Base Sepolia |
-| `X402_FACILITATOR_URL` | x402 payment verifier endpoint |
-| `DATABASE_URL` | SQLite file path (`file:./dev.db`) |
-| `NEXT_PUBLIC_BASE_RPC` | Base Sepolia RPC URL |
+```mermaid
+graph TD
+    subgraph Root["Synthesis/"]
+        subgraph Contracts["contracts/"]
+            SOL["AgentRegistry.sol\nERC-8004 identity + reputation"]
+            DJ["scripts/deploy.js\nnpx hardhat deploy --network base-sepolia"]
+            HC["hardhat.config.ts\nreads PRIVATE_KEY env"]
+        end
+
+        subgraph FE["frontend/"]
+            subgraph Pages["app/ — UI Pages"]
+                PG1["/ — landing"]
+                PG2["/dashboard — publisher metrics"]
+                PG3["/publish — upload content"]
+            end
+
+            subgraph Routes["app/api/ — Route Handlers"]
+                RT1["content/ → GET list + POST create + GET :id x402"]
+                RT2["agent/negotiate/ → POST"]
+                RT3["agent/register/ → POST"]
+                RT4["publisher/register/ → POST + CDP wallet"]
+                RT5["dashboard/ → GET aggregated metrics"]
+                RT6["webhook/openserv/ → POST"]
+            end
+
+            subgraph Lib["lib/ — Core Logic"]
+                LIB1["cdp/config.ts — Coinbase.configure()"]
+                LIB2["cdp/wallet.ts — createWallet / loadWallet"]
+                LIB3["erc8004/registry.ts — viem read + write contract"]
+                LIB4["erc8004/abi.ts — AgentRegistry ABI"]
+                LIB5["negotiation/engine.ts — price algorithm"]
+                LIB6["prisma.ts — MongoDB client singleton"]
+            end
+
+            subgraph Agents["agents/ — OpenServ Agent"]
+                AG1["publisherAgent.ts — agent definition"]
+                AG2["capabilities/negotiatePrice.ts"]
+                AG3["capabilities/checkReputation.ts"]
+                AG4["capabilities/evaluateContent.ts"]
+                AG5["capabilities/updateReputation.ts"]
+                AG6["index.ts — agent server entry"]
+            end
+
+            subgraph Scripts["scripts/"]
+                SC1["demoConsumer.ts — full e2e demo\nviem wallet + negotiate + x402"]
+                SC2["deployContract.ts — CDP-based deploy"]
+            end
+
+            subgraph DB["prisma/"]
+                DB1["schema.prisma — MongoDB models"]
+                DB2["seed.ts — demo publisher via CDP"]
+            end
+        end
+    end
+```
 
 ---
 
-## Run Commands
+## 8. Environment Variables
+
+| Variable | Used by | Purpose |
+|---|---|---|
+| `CDP_API_KEY_NAME` | `lib/cdp/config.ts` | Coinbase CDP API key ID |
+| `CDP_API_KEY_PRIVATE_KEY` | `lib/cdp/config.ts` | CDP API secret (base64 Ed25519) |
+| `CDP_WALLET_SECRET` | `@coinbase/cdp-sdk` v1 | Wallet encryption secret (CDP Portal → Settings → Wallet Secrets) |
+| `DEMO_PRIVATE_KEY` | `scripts/demoConsumer.ts` | Funded Base Sepolia key for demo consumer wallet |
+| `OPENAI_API_KEY` | `agents/capabilities/evaluateContent.ts` | Content quality scoring |
+| `OPENSERV_API_KEY` | `agents/publisherAgent.ts` | OpenServ agent platform |
+| `AGENT_REGISTRY_CONTRACT` | `lib/erc8004/registry.ts` | Deployed contract address on Base Sepolia |
+| `X402_FACILITATOR_URL` | `app/api/content/[id]/route.ts` | Payment verification endpoint |
+| `DATABASE_URL` | `lib/prisma.ts` | MongoDB Atlas connection string |
+| `NEXT_PUBLIC_BASE_RPC` | `lib/erc8004/registry.ts` | Base Sepolia RPC URL |
+| `NEXTAUTH_SECRET` | NextAuth | Session signing secret |
+| `NEXTAUTH_URL` | NextAuth | App base URL |
+
+---
+
+## 9. Run Commands
 
 ```bash
-# Start dev server
-cd frontend && npm run dev
+# ── Contracts ──────────────────────────────────────
+cd contracts
+PRIVATE_KEY=<funded_key> npm run deploy   # deploy to Base Sepolia
 
-# Run end-to-end demo
-cd frontend && npm run demo
+# ── Frontend setup ─────────────────────────────────
+cd frontend
+npm install
+cp .env.local.example .env.local          # fill in credentials
+npx prisma generate                        # generate MongoDB client
+npx prisma db push                         # create collections + indexes
+npm run db:seed                            # seed demo publisher (needs CDP)
 
-# Deploy contract (Hardhat)
-cd contracts && PRIVATE_KEY=<key> npm run deploy
+# ── Run ────────────────────────────────────────────
+npm run dev                                # start dev server → http://localhost:3000
+npm run demo                               # run full consumer demo (uses DEMO_PRIVATE_KEY)
+npm run agent                              # start OpenServ publisher agent server
+npm run build                              # production build
 
-# Seed database
-cd frontend && npm run db:seed
-
-# Type check
-cd frontend && npx tsc --noEmit
-
-# Production build
-cd frontend && npm run build
+# ── Utilities ──────────────────────────────────────
+npx tsc --noEmit                           # type check
+npx prisma studio                          # MongoDB GUI browser
 ```
