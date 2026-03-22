@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { getSession } from '@/lib/auth';
 
 const settingsSchema = z.object({
   generosity: z.number().int().min(1).max(10).optional(),
@@ -19,10 +20,14 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
-    const publisher = await prisma.publisher.findFirst();
+    const session = getSession(request);
+    const publisher = session
+      ? await prisma.publisher.findUnique({ where: { id: session.publisherId } })
+      : await prisma.publisher.findFirst();
     if (!publisher) {
       return NextResponse.json({ error: 'No publisher found' }, { status: 404 });
     }
+    console.log(`[settings] Updating publisher: ${publisher.name} (${publisher.id})`);
 
     const updated = await prisma.publisher.update({
       where: { id: publisher.id },

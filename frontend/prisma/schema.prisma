@@ -40,6 +40,8 @@ model Article {
   qualityScore  Float       @default(5.0)
   previewLength Int         @default(300)
   isFree        Boolean     @default(false)
+  thumbnail     String?     // URL or base64 image
+  isDraft       Boolean     @default(false)
   publisherId   String      @db.ObjectId
   publisher     Publisher   @relation(fields: [publisherId], references: [id])
   accessLogs    AccessLog[]

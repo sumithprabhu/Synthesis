@@ -10,21 +10,15 @@ const createBodySchema = z.object({
   publisherId: z.string(),
   isFree: z.boolean().optional(),
   previewLength: z.number().int().min(0).optional(),
+  thumbnail: z.string().optional(),
+  isDraft: z.boolean().optional(),
 });
 
 export async function GET() {
   const articles = await prisma.article.findMany({
-    select: {
-      id: true,
-      title: true,
-      summary: true,
-      tier: true,
-      basePrice: true,
-      qualityScore: true,
-      publisherId: true,
-      isFree: true,
-      previewLength: true,
-      content: true,
+    where: { isDraft: false },
+    include: {
+      publisher: { select: { name: true } },
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -39,6 +33,9 @@ export async function GET() {
     publisherId: a.publisherId,
     isFree: a.isFree,
     previewLength: a.previewLength,
+    publisher: a.publisher,
+    thumbnail: a.thumbnail,
+    isDraft: a.isDraft,
     preview: a.content.slice(0, a.previewLength) + (a.content.length > a.previewLength ? '…' : ''),
   }));
 
@@ -60,6 +57,8 @@ export async function POST(request: NextRequest) {
       publisherId,
       isFree = false,
       previewLength = 300,
+      thumbnail,
+      isDraft = false,
     } = parsed.data;
     const summary = content.slice(0, 120) + (content.length > 120 ? '…' : '');
     const article = await prisma.article.create({
@@ -72,6 +71,8 @@ export async function POST(request: NextRequest) {
         publisherId,
         isFree,
         previewLength,
+        ...(thumbnail !== undefined && { thumbnail }),
+        isDraft,
       },
     });
     return NextResponse.json(article);
@@ -79,4 +80,25 @@ export async function POST(request: NextRequest) {
     console.error(e);
     return NextResponse.json({ error: 'Failed to create content' }, { status: 500 });
   }
+}
+
+export async function PUT(request: NextRequest) {
+  const body = await request.json();
+  const { id, title, content, tier, basePrice, isFree, previewLength, isDraft, thumbnail } = body;
+  if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 });
+  const summary = content ? content.slice(0, 120) + (content.length > 120 ? '…' : '') : undefined;
+  const updated = await prisma.article.update({
+    where: { id },
+    data: {
+      ...(title !== undefined && { title }),
+      ...(content !== undefined && { content, summary }),
+      ...(tier !== undefined && { tier }),
+      ...(basePrice !== undefined && { basePrice }),
+      ...(isFree !== undefined && { isFree }),
+      ...(previewLength !== undefined && { previewLength }),
+      ...(isDraft !== undefined && { isDraft }),
+      ...(thumbnail !== undefined && { thumbnail }),
+    },
+  });
+  return NextResponse.json(updated);
 }

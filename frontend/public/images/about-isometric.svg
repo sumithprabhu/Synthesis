@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" fill="none">
+  <rect width="800" height="800" fill="#0a0a0a"/>
+  <g opacity="0.4">
+    <path stroke="#ea580c" stroke-width="1" d="M0 400h800M400 0v800"/>
+  </g>
+  <g stroke="#F2F1EA" stroke-width="1.2" opacity="0.85">
+    <path d="M200 520l120-70 120 70-120 70-120-70z" fill="#1a1a1a"/>
+    <path d="M320 450v140M440 520l120-70 120 70-120 70-120-70z" fill="#141414"/>
+    <path d="M560 450v140M260 380l120-70 120 70-120 70-120-70z" fill="#222"/>
+    <path d="M380 310v140M500 380l120-70 120 70-120 70-120-70z" fill="#181818"/>
+    <path d="M620 310v140"/>
+  </g>
+  <circle cx="400" cy="400" r="6" fill="#ea580c"/>
+  <g stroke="#ea580c" stroke-width="1" opacity="0.5">
+    <path d="M400 400L200 520M400 400L560 450M400 400L380 310"/>
+  </g>
+  <text x="40" y="60" fill="#F2F1EA" font-family="monospace" font-size="14" letter-spacing="0.2em">RENDER: agent_mesh.svg</text>
+  <text x="40" y="740" fill="#F2F1EA" font-family="monospace" font-size="12" opacity="0.5" letter-spacing="0.15em">ISO � NEGOTIATION GRAPH</text>
+</svg>

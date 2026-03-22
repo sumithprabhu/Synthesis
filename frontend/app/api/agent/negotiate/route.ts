@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       decision: result.decision,
+      price: result.price,
       counterOffer: result.price,
       reasoning: result.reasoning,
       sessionId: result.sessionId,
@@ -38,7 +39,8 @@ export async function POST(request: NextRequest) {
       agreed: result.agreed,
     });
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: 'Negotiation failed' }, { status: 500 });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error('[negotiate]', msg);
+    return NextResponse.json({ error: 'Negotiation failed', detail: msg }, { status: 500 });
   }
 }

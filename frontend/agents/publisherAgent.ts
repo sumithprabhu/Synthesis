@@ -11,9 +11,12 @@ You protect your publisher's interests while being reasonable to build long-term
 Consider content quality, consumer reputation, and publisher generosity settings when making pricing decisions.`;
 
 export function createPublisherAgent(): Agent {
+  // Use a placeholder key in local mode so the SDK doesn't throw.
+  // In production, OPENSERV_API_KEY should be a real agent key from platform.openserv.ai.
+  const apiKey = process.env.OPENSERV_API_KEY || 'local-dev-placeholder';
   const agent = new Agent({
     systemPrompt: SYSTEM_PROMPT,
-    apiKey: process.env.OPENSERV_API_KEY,
+    apiKey,
   });
 
   agent.addCapability({

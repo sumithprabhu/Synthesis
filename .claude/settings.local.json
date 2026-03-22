@@ -11,7 +11,29 @@
       "Bash(python3 -c \"import json,sys; v=json.load\\(sys.stdin\\); print\\(''''latest versions:'''', v[-5:]\\)\")",
       "Bash(npx tsc:*)",
       "Bash(DATABASE_URL=\"mongodb+srv://sumith:sumith@cluster0.qzdukwu.mongodb.net/contentagents?appName=Cluster0\" npx prisma generate 2>&1)",
-      "Bash(DATABASE_URL=\"mongodb+srv://sumith:sumith@cluster0.qzdukwu.mongodb.net/contentagents?appName=Cluster0\" npx prisma db push 2>&1)"
+      "Bash(DATABASE_URL=\"mongodb+srv://sumith:sumith@cluster0.qzdukwu.mongodb.net/contentagents?appName=Cluster0\" npx prisma db push 2>&1)",
+      "Bash(npx next:*)",
+      "Bash(lsof -ti:3000)",
+      "Bash(xargs kill:*)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.openserv.ai)",
+      "Bash(CONSUMER=\"0x0Fe68c895aafF3FD16d236A20c1F9113F26e7486\" curl -s -X POST http://localhost:3000/api/agent/negotiate -H \"Content-Type: application/json\" -d \"{\"\"articleId\"\":\"\"69bc146d3c4f744a9907e692\"\",\"\"consumerAddress\"\":\"\"$CONSUMER\"\",\"\"offer\"\":0.0005,\"\"useCase\"\":\"\"research and education\"\"}\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(lsof -ti:7378)",
+      "Bash(grep 7378 lsof -i:7378)",
+      "Bash(grep -r \"TODO\\\\|FIXME\\\\|mock\\\\|fake\\\\|placeholder\" /Users/sumith/Personal/Projects/Synthesis/frontend/agents --include=*.ts)",
+      "Bash(grep:*)",
+      "Bash(/dev/null cat:*)",
+      "Bash(echo 'not found' ls /Users/sumith/Personal/Projects/Synthesis/frontend/node_modules/x402*/)",
+      "Bash(ls /Users/sumith/Personal/Projects/Synthesis/frontend/node_modules/x402/dist/cjs/ grep -r \"useFacilitator\\\\|verify\\\\|settle\" /Users/sumith/Personal/Projects/Synthesis/frontend/node_modules/x402/dist/cjs/)",
+      "Bash(cd /Users/sumith/Personal/Projects/Synthesis/frontend npx tsc --noEmit --skipLibCheck)",
+      "Bash(ARTICLE_ID=\"69bc1f1f3c4f744a9907e69c\" curl -s --max-time 5 \"http://localhost:3000/api/content/$ARTICLE_ID\")",
+      "Bash(ARTICLE_ID=\"69bc1f1f3c4f744a9907e69c\")",
+      "Bash(PRIVATE_KEY=\"0x6691c599507a96750ad7e061b0c6adbf066fe41971c7645034088baa6f9af9ea\")",
+      "Bash(timeout 12 env OPENSERV_API_KEY=b36b63a3ff224e0c9889652960aa0a13 npm run agent)",
+      "Bash(npx vercel:*)",
+      "Bash(/dev/null head:*)"
     ]
   }
 }
