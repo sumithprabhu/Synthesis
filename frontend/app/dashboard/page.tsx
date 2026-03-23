@@ -377,32 +377,6 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {/* Agent warning banner */}
-          {!pub.agentCreated && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease }}
-              className="mt-4 border-2 border-[#ea580c]/60 bg-[#ea580c]/10 p-4"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-[#ea580c]">
-                    Agent not active
-                  </span>
-                  <p className="mt-1 font-mono text-xs text-muted-foreground">
-                    Create your OpenServ agent before publishing gated content.
-                  </p>
-                  {agentCreateError && (
-                    <p className="mt-1 font-mono text-xs text-red-500">{agentCreateError}</p>
-                  )}
-                </div>
-                <button onClick={handleCreateAgent} disabled={agentCreating} className={primaryBtn}>
-                  {agentCreating ? 'Creating…' : 'Create agent'}
-                </button>
-              </div>
-            </motion.div>
-          )}
 
           {/* Tab bar */}
           <div className="mt-8 flex border-b-2 border-foreground/20">
@@ -775,110 +749,42 @@ export default function DashboardPage() {
                     // Agent Settings
                   </span>
 
-                  {/* Agent card */}
-                  {!pub.agentCreated && (
-                    <div className="mt-4 border-2 border-[#ea580c]/40 bg-[#ea580c]/5 p-6">
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-[#ea580c]">
-                        OpenServ Agent — Not Activated
-                      </span>
-                      <p className="mt-2 font-mono text-xs text-muted-foreground">
-                        Activate your publisher agent to negotiate content access with AI consumer agents on the Parley Protocol platform.
-                      </p>
-                      {agentCreateError && (
-                        <p className="mt-2 font-mono text-xs text-red-500">{agentCreateError}</p>
-                      )}
-                      <button
-                        onClick={handleCreateAgent}
-                        disabled={agentCreating}
-                        className={`${primaryBtn} mt-4`}
-                      >
-                        {agentCreating ? 'Activating…' : 'Activate Publisher Agent'}
-                      </button>
-                    </div>
-                  )}
-                  {pub.agentCreated && (
-                    <div className="mt-4 space-y-4">
-                      {/* Status card */}
-                      <div className={`border-2 p-4 ${
-                        agentConnectionStatus === 'connected'
-                          ? 'border-green-500/40 bg-green-500/5'
-                          : agentConnectionStatus === 'local'
-                          ? 'border-blue-500/40 bg-blue-500/5'
-                          : 'border-yellow-500/40 bg-yellow-500/5'
-                      }`}>
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <span className={`border px-2 py-0.5 font-mono text-[10px] ${
-                              agentConnectionStatus === 'connected'
-                                ? 'border-green-500/60 text-green-500'
-                                : agentConnectionStatus === 'local'
-                                ? 'border-blue-500/60 text-blue-500'
-                                : 'border-yellow-500/60 text-yellow-500'
-                            }`}>
-                              {agentConnectionStatus === 'connected' ? '● OPENSERV CLOUD' : agentConnectionStatus === 'local' ? '● LOCAL' : '○ OFFLINE'}
-                            </span>
-                            <span className="font-mono text-xs text-muted-foreground">
-                              Publisher Agent
-                            </span>
-                          </div>
-                          <button onClick={checkAgentStatus} className={secondaryBtn + ' text-[10px] py-1 px-2'}>
-                            Refresh
-                          </button>
-                        </div>
-                        {pub.openservAgentId && (
-                          <p className="mt-2 font-mono text-[10px] text-muted-foreground">
-                            ID: {pub.openservAgentId}
-                          </p>
-                        )}
-                        {agentConnectionStatus === 'local' && (
-                          <p className="mt-2 font-mono text-[10px] text-muted-foreground">
-                            Running locally on port 7378. Capabilities (negotiate, evaluate, reputation) all work.
-                          </p>
-                        )}
-                        {agentConnectionStatus === 'offline' && (
-                          <p className="mt-2 font-mono text-[10px] text-yellow-600">
-                            Agent server not detected. Run: <code className="bg-foreground/10 px-1">npm run agent</code> in a separate terminal to start.
-                          </p>
-                        )}
+                  {/* What's live right now */}
+                  <div className="mt-4 space-y-3">
+                    <div className="border border-green-500/40 bg-green-500/5 p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="border border-green-500/60 px-2 py-0.5 font-mono text-[10px] text-green-500">● LIVE</span>
+                        <span className="font-mono text-xs text-foreground">Negotiation Engine</span>
                       </div>
-
-                      {/* Setup guide for OpenServ cloud connection */}
-                      {!openservConnected && (
-                        <div className="border border-foreground/20 p-4">
-                          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                            // Connect to OpenServ Cloud (Optional)
-                          </span>
-                          <p className="mt-2 font-mono text-[10px] text-muted-foreground leading-relaxed">
-                            To connect your agent to the OpenServ platform and be discoverable by other AI agents:
-                          </p>
-                          <ol className="mt-3 space-y-1.5">
-                            {[
-                              'Go to platform.openserv.ai → Developer → Add Agent',
-                              'Name: "Parley Protocol Publisher Agent"',
-                              'Capabilities: "Negotiate content access prices, evaluate content quality, manage publisher earnings on Parley Protocol platform"',
-                              'Copy the generated agent API key',
-                              'Update OPENSERV_API_KEY in .env.local with the agent API key',
-                              'Run: npm run agent (separate terminal) — agent connects automatically',
-                            ].map((step, i) => (
-                              <li key={i} className="flex items-start gap-2 font-mono text-[10px] text-muted-foreground">
-                                <span className="text-[#ea580c] shrink-0">{i + 1}.</span>
-                                <span>{step}</span>
-                              </li>
-                            ))}
-                          </ol>
-                          <a
-                            href="https://platform.openserv.ai"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`${primaryBtn} mt-4 inline-flex items-center gap-2`}
-                          >
-                            <ExternalLink size={12} />
-                            Open platform.openserv.ai
-                          </a>
-                        </div>
-                      )}
+                      <p className="mt-2 font-mono text-[10px] text-muted-foreground leading-relaxed">
+                        Your publisher agent&apos;s negotiation logic runs as a serverless API on Parley Protocol. AI consumer agents can already discover your articles, negotiate prices using your settings below, and pay via x402 USDC — no setup needed.
+                      </p>
                     </div>
-                  )}
+
+                    {/* OpenServ SDK agent — optional advanced */}
+                    <div className="border border-foreground/20 p-4">
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                        // OpenServ Platform Integration (Optional)
+                      </span>
+                      <p className="mt-2 font-mono text-[10px] text-muted-foreground leading-relaxed">
+                        The OpenServ SDK publisher agent is an additional standalone server you can run to make your agent
+                        discoverable on <span className="text-foreground">platform.openserv.ai</span> — a marketplace where external AI agents can find and interact with yours directly.
+                        This is separate from how the Parley Protocol platform works and is not required to publish or earn.
+                      </p>
+                      <p className="mt-3 font-mono text-[10px] text-muted-foreground leading-relaxed">
+                        To use it: clone the repo, set <code className="bg-foreground/10 px-1">OPENSERV_API_KEY</code> from platform.openserv.ai, then run <code className="bg-foreground/10 px-1">npm run agent</code> locally or deploy it as a persistent server.
+                      </p>
+                      <a
+                        href="https://platform.openserv.ai"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${secondaryBtn} mt-4 inline-flex items-center gap-2`}
+                      >
+                        <ExternalLink size={12} />
+                        platform.openserv.ai
+                      </a>
+                    </div>
+                  </div>
 
                   <form onSubmit={handleSaveSettings} className="space-y-6 border-2 border-foreground/20 bg-background/80 p-6 backdrop-blur-sm">
                     <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">

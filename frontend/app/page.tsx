@@ -11,8 +11,8 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <HeroSection />
-        <LatestContent />
-        <FeaturesSection />
+        <div id="articles"><LatestContent /></div>
+        <div id="features"><FeaturesSection /></div>
         <GlitchMarquee />
       </main>
       <Footer />

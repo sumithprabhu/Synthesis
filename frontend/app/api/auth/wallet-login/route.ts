@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyMessage } from 'viem';
 import { prisma } from '@/lib/prisma';
 import { signToken, consumeNonce } from '@/lib/auth';
+import { createWallet } from '@/lib/cdp/wallet';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,11 +26,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    // Find publisher by wallet address
-    const publisher = await prisma.publisher.findUnique({ where: { walletAddress: address } });
+    // Find or auto-create publisher by wallet address
+    let publisher = await prisma.publisher.findUnique({ where: { walletAddress: address } });
     if (!publisher) {
-      console.log(`[auth/wallet-login] No publisher found for wallet ${address}`);
-      return NextResponse.json({ error: 'No publisher account for this wallet. Please register first.' }, { status: 404 });
+      console.log(`[auth/wallet-login] No publisher found for ${address} — auto-creating`);
+      let walletId: string;
+      try {
+        const cdpWallet = await createWallet();
+        walletId = cdpWallet.walletId;
+      } catch {
+        walletId = `mock-wallet-${Date.now()}`;
+      }
+      publisher = await prisma.publisher.create({
+        data: {
+          name: `${address.slice(0, 6)}…${address.slice(-4)}`,
+          email: `${address.toLowerCase()}@wallet.local`,
+          walletAddress: address,
+          cdpWalletId: walletId,
+        },
+      });
+      console.log(`[auth/wallet-login] ✓ Auto-created publisher for ${address}`);
     }
 
     const token = signToken({

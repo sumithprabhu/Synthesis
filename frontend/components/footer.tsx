@@ -7,6 +7,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 const links = [
   { name: 'Demo', href: '/demo', external: false },
+  { name: 'Docs', href: '/docs', external: false },
   { name: 'Dashboard', href: '/dashboard', external: false },
   { name: 'Publishers', href: '/publishers', external: false },
   { name: 'GitHub', href: 'https://github.com/sumithprabhu/ContentAgents', external: true },

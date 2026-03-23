@@ -34,7 +34,8 @@
       "Bash(timeout 12 env OPENSERV_API_KEY=b36b63a3ff224e0c9889652960aa0a13 npm run agent)",
       "Bash(npx vercel:*)",
       "Bash(/dev/null head:*)",
-      "WebFetch(domain:synthesis.md)"
+      "WebFetch(domain:synthesis.md)",
+      "Bash(python3 -c \":*)"
     ]
   }
 }
