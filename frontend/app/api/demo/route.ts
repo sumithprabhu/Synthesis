@@ -10,8 +10,12 @@ function encode(event: string, data: unknown): string {
   return `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
 }
 
-function getBaseUrl(): string {
-  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL.replace(/\/$/, '');
+function getBaseUrl(request: NextRequest): string {
+  const host = request.headers.get('host');
+  if (host) {
+    const proto = request.headers.get('x-forwarded-proto') || 'https';
+    return `${proto}://${host}`;
+  }
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
   return 'http://localhost:3000';
 }
@@ -39,7 +43,7 @@ export async function GET(_request: NextRequest) {
       const privateKey = (rawKey.startsWith('0x') ? rawKey : `0x${rawKey}`) as `0x${string}`;
       const account = privateKeyToAccount(privateKey);
       const consumerAddress = account.address;
-      const BASE_URL = getBaseUrl();
+      const BASE_URL = getBaseUrl(_request);
 
       // ── Step 1: Browse articles ─────────────────────────────────────────────
       await send('step', {
