@@ -1,77 +1,32 @@
-# ContentAgents
+<div align="center">
+  <img src="frontend/public/logo.png" alt="Parley Protocol" width="96" />
+  <h1>Parley Protocol</h1>
+</div>
 
-**The Negotiating Web** — Publishers get paid, agents get content. Autonomous AI agents negotiate content access in real time using x402 micropayments on Base and ERC-8004 onchain identity.
+---
 
-## Repository layout
+**The open negotiation layer for AI agents and content publishers.**
 
-- **`frontend/`** — Next.js app (dashboard, publish, API routes), OpenServ publisher agent, Prisma, x402 content route, negotiate API.
-- **`contracts/`** — Hardhat project; `AgentRegistry.sol` for Base Sepolia (ERC-8004–style registry).
+Publishers set a price. AI agents discover articles, negotiate using on-chain reputation, and pay in real USDC on Base — fully autonomously, no human in the loop.
 
-## Quick start
+---
 
-### Contracts (compile / deploy)
+## Features
 
-```bash
-cd contracts
-npm install
-npx hardhat compile
-# Deploy to Base Sepolia (set PUBLISHER_WALLET_PRIVATE_KEY in env):
-npx hardhat run scripts/deploy.js --network base-sepolia
-```
+- **x402 Micropayments** — HTTP 402 paywall with EIP-3009 TransferWithAuthorization. Real USDC transfers on Base Sepolia, settled by the x402.org facilitator.
+- **AI Price Negotiation** — Claude-powered negotiation engine. Multi-round back-and-forth between consumer and publisher agents, with configurable generosity, min price, and use-case rules.
+- **ERC-8004 On-Chain Reputation** — Agent reputation scores read from the AgentRegistry contract on Base Sepolia. High-reputation agents get better deals automatically.
+- **Publisher Dashboard** — Earnings tracking, access logs, negotiation history, and negotiation personality settings — all in one place.
+- **Wallet-Free Onboarding** — CDP-managed wallets created automatically on publisher signup. No MetaMask required to publish and earn.
+- **OpenServ SDK Agents** — Publisher and consumer agents built on OpenServ SDK, discoverable on platform.openserv.ai.
+- **Live Demo** — Built-in playground at `/demo` that runs a real end-to-end negotiation and x402 payment on Base Sepolia.
 
-Or deploy from the frontend using viem (writes `AGENT_REGISTRY_CONTRACT` to `frontend/.env.local`):
+---
 
-```bash
-cd frontend
-npm run deploy:contract
-```
+## Upcoming Features
 
-(Requires `contracts/` to be compiled first so the artifact exists.)
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-cp .env.local.example .env.local   # edit with keys, DATABASE_URL, AGENT_REGISTRY_CONTRACT
-npx prisma generate
-npx prisma db push
-npm run db:seed
-npm run dev
-```
-
-See **`frontend/README.md`** for full setup, env vars, and scripts.
-
-## How it works
-
-```
-Consumer Agent                    Publisher Agent (API)           Base Sepolia
-──────────────                    ─────────────────────           ────────────
-Create CDP wallet
-        │
-        ▼
-Register on ERC-8004 ────────────────────────────────────────► AgentRegistry.sol
-        │
-        ▼
-Fetch articles  ◄──────────────── GET /api/content
-        │
-        ▼
-Negotiate price ◄──────────────── POST /api/agent/negotiate
-   (loop up to 5 rounds)          • checks ERC-8004 reputation
-                                  • counters based on quality + rep score
-        │ (price agreed)
-        ▼
-Pay via x402    ──────────────────────────────────────────────► USDC transfer
-        │
-        ▼
-GET /api/content/:id              verify payment via x402.org/facilitator
-   + payment-signature  ─────────► serve article content
-                                   write AccessLog to DB
-```
-
-> See **[workflow.md](./workflow.md)** for the full architecture diagram, component map, negotiation algorithm, and data flow.
-
-## Tech stack
-
-- **Frontend:** Next.js 14, TypeScript, Tailwind, Prisma (SQLite), OpenServ SDK, x402 (payment verification in Route Handler), viem (ERC-8004).
-- **Contracts:** Solidity 0.8.20, Hardhat, Base Sepolia.
+- **Reputation Updates After Deals** — Automatically write updated ERC-8004 scores on-chain after each completed transaction.
+- **Multi-Publisher Discovery** — Consumer agents browse and compare articles across multiple publishers in a single session.
+- **Subscription Tiers** — Publishers offer time-based access passes in addition to per-article pricing.
+- **Agent-to-Agent Referrals** — Agents earn a fee for referring consumer agents to publishers they've dealt with before.
+- **Analytics Dashboard** — Revenue charts, top-performing articles, and negotiation win-rate metrics.
