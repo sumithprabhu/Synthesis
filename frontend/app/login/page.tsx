@@ -100,7 +100,7 @@ export default function LoginPage() {
         {/* Logo */}
         <Link href="/" className="mb-8 flex items-center gap-3">
           <Bot size={16} strokeWidth={1.5} />
-          <span className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-foreground">ContentAgents</span>
+          <span className="font-mono text-xs font-bold uppercase tracking-[0.15em] text-foreground">Parley Protocol</span>
         </Link>
 
         {/* Header */}

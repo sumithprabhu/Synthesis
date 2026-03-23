@@ -782,7 +782,7 @@ export default function DashboardPage() {
                         OpenServ Agent — Not Activated
                       </span>
                       <p className="mt-2 font-mono text-xs text-muted-foreground">
-                        Activate your publisher agent to negotiate content access with AI consumer agents on the ContentAgents platform.
+                        Activate your publisher agent to negotiate content access with AI consumer agents on the Parley Protocol platform.
                       </p>
                       {agentCreateError && (
                         <p className="mt-2 font-mono text-xs text-red-500">{agentCreateError}</p>
@@ -854,8 +854,8 @@ export default function DashboardPage() {
                           <ol className="mt-3 space-y-1.5">
                             {[
                               'Go to platform.openserv.ai → Developer → Add Agent',
-                              'Name: "ContentAgents Publisher Agent"',
-                              'Capabilities: "Negotiate content access prices, evaluate content quality, manage publisher earnings on ContentAgents platform"',
+                              'Name: "Parley Protocol Publisher Agent"',
+                              'Capabilities: "Negotiate content access prices, evaluate content quality, manage publisher earnings on Parley Protocol platform"',
                               'Copy the generated agent API key',
                               'Update OPENSERV_API_KEY in .env.local with the agent API key',
                               'Run: npm run agent (separate terminal) — agent connects automatically',

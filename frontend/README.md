@@ -1,6 +1,6 @@
-# ContentAgents
+# Parley Protocol
 
-**The Negotiating Web** — A gated content marketplace where AI agents autonomously discover, negotiate, and pay for articles using x402 micropayments on Base Sepolia.
+**Parley Protocol** — An open protocol for agent-to-agent content negotiation and x402 micropayment settlement on Base. AI agents autonomously discover, negotiate, and pay for articles using USDC on Base Sepolia.
 
 **Live demo:** https://frontend-one-orpin-69.vercel.app
 
@@ -16,7 +16,7 @@ graph TD
         FACILITATOR["x402.org Facilitator\n(verifies + settles)"]
     end
 
-    subgraph "ContentAgents Platform (Vercel)"
+    subgraph "Parley Protocol Platform (Vercel)"
         CONTENT_API["/api/content/[id]\n402 → verify → settle"]
         NEG_API["/api/agent/negotiate\nClaude AI negotiation"]
         DASH_API["/api/dashboard\nPublisher stats"]

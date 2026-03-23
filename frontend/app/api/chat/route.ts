@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY });
 
-const SYSTEM_PROMPT = `You are the ContentAgents publisher assistant. Help publishers craft better articles, improve their negotiation settings, and understand how the x402 micropayment system and ERC-8004 reputation work. Be concise and practical. When suggesting content strategy, focus on quality score, pricing strategy, and free-access policies.`;
+const SYSTEM_PROMPT = `You are the Parley Protocol publisher assistant. Help publishers craft better articles, improve their negotiation settings, and understand how the x402 micropayment system and ERC-8004 reputation work. Be concise and practical. When suggesting content strategy, focus on quality score, pricing strategy, and free-access policies.`;
 
 export async function POST(request: NextRequest) {
   try {

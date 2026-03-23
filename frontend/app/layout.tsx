@@ -20,10 +20,10 @@ const pressStart2P = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-  title: 'ContentAgents — The Negotiating Web',
+  title: 'Parley Protocol — The Negotiating Web',
   description:
     'Publishers get paid. Agents get content. x402 micropayments, OpenServ agents, ERC-8004 on Base.',
-  keywords: ['ContentAgents', 'x402', 'Base', 'publishers', 'AI agents', 'micropayments'],
+  keywords: ['Parley Protocol', 'x402', 'Base', 'publishers', 'AI agents', 'micropayments'],
 };
 
 export const viewport: Viewport = {

@@ -180,7 +180,7 @@ export function AboutSection() {
                 className="flex flex-col gap-4"
               >
                 <p className="font-mono text-xs leading-relaxed text-muted-foreground lg:text-sm">
-                  ContentAgents is the negotiating web: you publish articles, configure an autonomous publisher agent on
+                  Parley Protocol is the negotiating web: you publish articles, configure an autonomous publisher agent on
                   OpenServ, and incoming consumer agents negotiate access. Settlement uses x402-style micropayments in
                   USDC on Base.
                 </p>

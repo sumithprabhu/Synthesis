@@ -33,7 +33,8 @@
       "Bash(PRIVATE_KEY=\"0x6691c599507a96750ad7e061b0c6adbf066fe41971c7645034088baa6f9af9ea\")",
       "Bash(timeout 12 env OPENSERV_API_KEY=b36b63a3ff224e0c9889652960aa0a13 npm run agent)",
       "Bash(npx vercel:*)",
-      "Bash(/dev/null head:*)"
+      "Bash(/dev/null head:*)",
+      "WebFetch(domain:synthesis.md)"
     ]
   }
 }

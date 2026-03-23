@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify signature
-    const message = `Sign this message to login to ContentAgents.\n\nNonce: ${nonce}`;
+    const message = `Sign this message to login to Parley Protocol.\n\nNonce: ${nonce}`;
     const valid = await verifyMessage({ address: address as `0x${string}`, message, signature });
     if (!valid) {
       console.log(`[auth/wallet-login] Invalid signature for ${address}`);

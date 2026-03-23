@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       openservConnected: !!realAgentId,
       setupGuide: realAgentId ? null : {
         step1: 'Go to platform.openserv.ai → Developer → Add Agent',
-        step2: 'Fill in: Name="ContentAgents Publisher Agent", Capabilities="Negotiate content access prices, evaluate content quality, manage publisher earnings"',
+        step2: 'Fill in: Name="Parley Protocol Publisher Agent", Capabilities="Negotiate content access prices, evaluate content quality, manage publisher earnings"',
         step3: 'Copy the generated agent API key',
         step4: 'Update OPENSERV_API_KEY in .env.local with the agent API key (not the developer key)',
         step5: 'Run: npm run agent (in a separate terminal) to start the agent server',

@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bot, ChevronDown, LayoutDashboard, FileText, LogOut, User } from 'lucide-react';
+import { ChevronDown, LayoutDashboard, FileText, LogOut, User, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -78,6 +79,7 @@ function WalletButton() {
             {[
               { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { href: '/publish', label: 'Publish', icon: FileText },
+              { href: '/demo', label: 'Demo', icon: Zap },
             ].map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
@@ -119,9 +121,9 @@ export function Navbar() {
     >
       <nav className="w-full border border-foreground/20 bg-background/80 px-6 py-3 backdrop-blur-sm lg:px-8">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <Bot size={16} strokeWidth={1.5} />
-            <span className="text-xs font-bold uppercase tracking-[0.15em] text-foreground">ContentAgents</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Parley Protocol" width={48} height={48} className="object-contain" />
+            <span className="text-xs font-bold uppercase tracking-[0.15em] text-foreground">Parley Protocol</span>
           </Link>
           <div className="flex items-center gap-4">
             <ThemeToggle />

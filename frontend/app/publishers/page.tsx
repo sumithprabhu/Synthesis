@@ -76,7 +76,7 @@ export default function PublishersPage() {
             transition={{ duration: 0.5, delay: 0.15, ease }}
             className="mb-12 max-w-xl font-mono text-sm leading-relaxed text-muted-foreground"
           >
-            Registered wallets on ContentAgents. Article counts and earnings are shown for discovery.
+            Registered wallets on Parley Protocol. Article counts and earnings are shown for discovery.
           </motion.p>
 
           {loading ? (

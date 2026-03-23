@@ -1,3 +1,11 @@
 {
-  "public": true
+  "public": true,
+  "functions": {
+    "app/api/demo/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/agent/negotiate/route.ts": {
+      "maxDuration": 30
+    }
+  }
 }
